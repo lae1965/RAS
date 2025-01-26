@@ -1,0 +1,102 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Wall",
+      "-Wextra",
+      "-std=c99",
+      "-D_GNU_SOURCE",
+      "-I./pkg/cJSON",
+      "-I./internal/http",
+      "-I./internal/linked_list",
+      "-I./cmd",
+      "-c",
+      "-o",
+      "internal/service/filterService.o",
+      "internal/service/filterService.c"
+    ],
+    "directory": "/home/andrey/RAS/Server",
+    "file": "/home/andrey/RAS/Server/internal/service/filterService.c",
+    "output": "/home/andrey/RAS/Server/internal/service/filterService.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Wall",
+      "-Wextra",
+      "-std=c99",
+      "-D_GNU_SOURCE",
+      "-I./pkg/cJSON",
+      "-I./internal/http",
+      "-I./internal/linked_list",
+      "-I./cmd",
+      "-c",
+      "-o",
+      "internal/util/feederUtil.o",
+      "internal/util/feederUtil.c"
+    ],
+    "directory": "/home/andrey/RAS/Server",
+    "file": "/home/andrey/RAS/Server/internal/util/feederUtil.c",
+    "output": "/home/andrey/RAS/Server/internal/util/feederUtil.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Wall",
+      "-Wextra",
+      "-std=c99",
+      "-D_GNU_SOURCE",
+      "-I./pkg/cJSON",
+      "-I./internal/http",
+      "-I./internal/linked_list",
+      "-I./cmd",
+      "-c",
+      "-o",
+      "internal/util/filterUtil.o",
+      "internal/util/filterUtil.c"
+    ],
+    "directory": "/home/andrey/RAS/Server",
+    "file": "/home/andrey/RAS/Server/internal/util/filterUtil.c",
+    "output": "/home/andrey/RAS/Server/internal/util/filterUtil.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Wall",
+      "-Wextra",
+      "-std=c99",
+      "-D_GNU_SOURCE",
+      "-I./pkg/cJSON",
+      "-I./internal/http",
+      "-I./internal/linked_list",
+      "-I./cmd",
+      "-c",
+      "-o",
+      "internal/util/util.o",
+      "internal/util/util.c"
+    ],
+    "directory": "/home/andrey/RAS/Server",
+    "file": "/home/andrey/RAS/Server/internal/util/util.c",
+    "output": "/home/andrey/RAS/Server/internal/util/util.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Wall",
+      "-Wextra",
+      "-std=c99",
+      "-D_GNU_SOURCE",
+      "-I./pkg/cJSON",
+      "-I./internal/http",
+      "-I./internal/linked_list",
+      "-I./cmd",
+      "-c",
+      "-o",
+      "cmd/main.o",
+      "cmd/main.c"
+    ],
+    "directory": "/home/andrey/RAS/Server",
+    "file": "/home/andrey/RAS/Server/cmd/main.c",
+    "output": "/home/andrey/RAS/Server/cmd/main.o"
+  }
+]

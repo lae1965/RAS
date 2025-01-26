@@ -1,0 +1,92 @@
+.form {
+  width: 290px;
+  height: 290px;
+  padding: 20px;
+  background-color: #f1f1f1;
+  border: none;
+  outline: none;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.07);
+  font-size: 13px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.properties {
+  flex: 1;
+}
+
+label {
+  display: flex;
+  align-items: center;
+}
+
+.timeInputs {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.level {
+  display: grid;
+  grid-template-columns: auto 55px;
+  margin-left: 25px;
+}
+
+.percents {
+  background-color: #fff;
+  border-radius: 15px;
+  text-align: center;
+}
+
+.percents input {
+  font-size: 13px;
+  width: 15px;
+  border: none;
+  outline: none;
+  padding-inline: 0;
+}
+
+.percents input::-webkit-inner-spin-button,
+.percents input::-webkit-outer-spin-button {
+  display: none;
+}
+
+.buttons {
+  display: flex;
+  gap: 20px;
+  align-items: flex-end;
+  position: relative;
+}
+
+.button {
+  padding: 10px 15px;
+  border-radius: 15px;
+}
+
+.greyButton {
+  background-color: #c9c9c9;
+}
+
+.greyButton:hover {
+  background-color: #b7b7b7;
+}
+
+.greyButton:active {
+  background-color: #a5a5a5;
+}
+
+.deleteIcon {
+  height: 32px;
+  width: 32px;
+}
+
+.buttonIcon,
+.buttonIcon:hover,
+.buttonIcon:active {
+  background-color: inherit;
+}
+
+.buttonIcon {
+  margin-left: 75px;
+}

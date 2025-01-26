@@ -1,0 +1,26 @@
+.circle {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  transform: rotate(320deg);
+  border: 5px solid #c9c8c8;
+}
+
+.glare {
+  position: absolute;
+  top: 9%;
+  left: 50%;
+  width: 40%;
+  height: 17%;
+  background-color: #f2f2f2;
+  border-radius: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.glareForYellow {
+  background-color: #ffffff;
+  width: 50%;
+  height: 22%;
+}

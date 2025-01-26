@@ -1,0 +1,29 @@
+.greyButton {
+  background-color: #c9c9c9;
+}
+
+.greyButton:hover {
+  background-color: #b7b7b7;
+}
+
+.greyButton:active {
+  background-color: #a5a5a5;
+}
+
+.action {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.action h3 {
+  font-size: 13px;
+  font-weight: normal;
+  text-align: center;
+  color: #f1f1f1;
+}
+
+.action button {
+  padding-block: 10px;
+  border-radius: 20px;
+}

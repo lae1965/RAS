@@ -1,0 +1,8 @@
+{
+  "files.associations": {
+    "device.h": "c",
+    "http.h": "c",
+    "time.h": "c",
+    "signal.h": "c"
+  }
+}

@@ -1,0 +1,13 @@
+.dialog {
+  position: absolute;
+  width: 100%;
+  top: 0;
+  left: 0;
+  padding: 20px;
+  background-color: #d50f11;
+  border: none;
+  outline: none;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.07);
+  z-index: 2;
+  border-radius: 20px;
+}

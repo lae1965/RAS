@@ -1,0 +1,99 @@
+.filter {
+  position: relative;
+}
+
+.drumFilterWrapper {
+  position: relative;
+  width: 224px;
+  padding: 15px;
+  background-color: #fff;
+  border: none;
+  outline: none;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.07);
+  transition: background-color 0.3s;
+}
+
+.drumFilterWrapper[data-poweroff='true'] {
+  filter: grayscale(1);
+  background-color: #faebd7;
+}
+
+.indicator {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  background-color: transparent;
+}
+
+.indicator:hover {
+  background-color: transparent;
+}
+
+.indicator:active {
+  transform: scale(0.9);
+}
+
+.heading {
+  font-size: 14px;
+  margin: 0 0 10px;
+  color: #008b8b;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+}
+
+.drumFilter {
+  display: flex;
+  gap: 5px;
+  justify-content: space-between;
+}
+
+.error {
+  color: red;
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  position: absolute;
+  top: 54%;
+  left: 12px;
+  animation: blinking 1s linear infinite;
+}
+
+.error p {
+  width: min-content;
+}
+
+.smallIndicator {
+  transform: scale(0.6) rotate(320deg);
+}
+
+.addActions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 10px;
+}
+
+.actionButton {
+  padding: 10px;
+  border-radius: 20px;
+}
+
+.actionButton:disabled:hover,
+.actionButton:disabled:active {
+  background-color: #ffe55e;
+}
+
+@keyframes blinking {
+  0%,
+  25%,
+  100% {
+    opacity: 1;
+  }
+
+  50%,
+  75% {
+    opacity: 0;
+  }
+}

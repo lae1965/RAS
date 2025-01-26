@@ -1,0 +1,164 @@
+:root {
+  --spray-duration: 0.08s;
+  --water-size: 3px;
+}
+
+.sprayIcon {
+  position: relative;
+  width: 50px;
+  height: 35px;
+}
+
+.nozzle {
+  background-color: #555;
+  width: 8px;
+  height: 10px;
+  border-radius: 4px;
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+}
+
+.waterSpray {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.waterDrop {
+  width: var(--water-size);
+  height: var(--water-size);
+  background-color: #07d1d1;
+  border-radius: 50%;
+  position: absolute;
+  top: 0;
+  opacity: 1;
+}
+
+.drop1 {
+  left: 30%;
+  animation: angle45 var(--spray-duration) linear infinite;
+}
+
+.drop2 {
+  left: 40%;
+  animation: angle33 var(--spray-duration) linear infinite;
+}
+
+.drop3 {
+  left: 50%;
+  animation: angle22 var(--spray-duration) linear infinite;
+}
+
+.drop4 {
+  left: 60%;
+  animation: angle11 var(--spray-duration) linear infinite;
+}
+
+.drop5 {
+  left: 70%;
+  animation: vertical var(--spray-duration) linear infinite;
+}
+
+.drop6 {
+  left: 60%;
+  animation: angleM11 var(--spray-duration) linear infinite;
+}
+
+.drop7 {
+  left: 50%;
+  animation: angleM22 var(--spray-duration) linear infinite;
+}
+
+.drop8 {
+  left: 40%;
+  animation: angleM33 var(--spray-duration) linear infinite;
+}
+
+.drop9 {
+  left: 30%;
+  animation: angleM45 var(--spray-duration) linear infinite;
+}
+
+@keyframes angle45 {
+  0% {
+    transform: translate(-50%, 0);
+  }
+  100% {
+    transform: translate(-20px, 20px);
+  }
+}
+
+@keyframes angle33 {
+  0% {
+    transform: translate(-50%, 0);
+  }
+  100% {
+    transform: translate(-15px, 20px);
+  }
+}
+
+@keyframes angle22 {
+  0% {
+    transform: translate(-50%, 0);
+  }
+  100% {
+    transform: translate(-10px, 20px);
+  }
+}
+
+@keyframes angle11 {
+  0% {
+    transform: translate(-50%, 0);
+  }
+  100% {
+    transform: translate(-5px, 20px);
+  }
+}
+
+@keyframes vertical {
+  0% {
+    transform: translate(-50%, 0);
+  }
+  100% {
+    transform: translate(0, 20px);
+  }
+}
+
+@keyframes angleM11 {
+  0% {
+    transform: translate(-50%, 0);
+  }
+  100% {
+    transform: translate(5px, 20px);
+  }
+}
+
+@keyframes angleM22 {
+  0% {
+    transform: translate(-50%, 0);
+  }
+  100% {
+    transform: translate(10px, 20px);
+  }
+}
+
+@keyframes angleM33 {
+  0% {
+    transform: translate(-50%, 0);
+  }
+  100% {
+    transform: translate(15px, 20px);
+  }
+}
+
+@keyframes angleM45 {
+  0% {
+    transform: translate(-50%, 0);
+  }
+  100% {
+    transform: translate(20px, 20px);
+  }
+}

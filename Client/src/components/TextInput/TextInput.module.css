@@ -1,0 +1,11 @@
+.name {
+  justify-content: space-between;
+}
+
+.name input {
+  width: 120px;
+  padding: 5px;
+  border: none;
+  outline: none;
+  border-radius: 15px;
+}

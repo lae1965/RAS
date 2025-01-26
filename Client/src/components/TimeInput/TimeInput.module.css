@@ -1,0 +1,24 @@
+.label {
+  display: grid;
+  grid-template-columns: auto 55px;
+  margin-left: 18px;
+  position: relative;
+}
+
+.time {
+  background-color: #fff;
+  border-radius: 15px;
+  text-align: center;
+}
+
+.input {
+  font-size: 13px;
+  width: 15px;
+  border: none;
+  outline: none;
+}
+
+.input::-webkit-inner-spin-button,
+.input::-webkit-outer-spin-button {
+  display: none;
+}

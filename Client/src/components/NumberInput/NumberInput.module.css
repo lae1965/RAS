@@ -1,0 +1,12 @@
+.input {
+  font-size: 13px;
+  width: 15px;
+  border: none;
+  outline: none;
+  background-color: inherit;
+}
+
+.input::-webkit-inner-spin-button,
+.input::-webkit-outer-spin-button {
+  display: none;
+}

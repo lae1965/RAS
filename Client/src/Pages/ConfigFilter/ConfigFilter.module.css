@@ -1,0 +1,48 @@
+.nav {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 80px);
+}
+
+.drive {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+.heading {
+  color: #696969;
+}
+
+.list {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.list li {
+  border-radius: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+}
+
+.addFilter {
+  position: relative;
+}
+
+.button {
+  width: 250px;
+  padding-block: 10px;
+  border-radius: 20px;
+}
+
+.pagesNav {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}

@@ -1,0 +1,34 @@
+* {
+  font-family: Roboto;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+button {
+  border: none;
+  outline: none;
+  background-color: #ffe55e;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #f5db54;
+}
+
+button:active {
+  background-color: #ebd14a;
+}
+
+ul {
+  list-style-type: none;
+}
+
+a {
+  text-decoration: none;
+  color: #43abab;
+}
+
+a:hover {
+  color: #009797;
+}

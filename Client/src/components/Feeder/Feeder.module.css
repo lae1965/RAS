@@ -1,0 +1,75 @@
+.feeder {
+  display: flex;
+  flex-direction: column;
+}
+
+.aquarium {
+  z-index: 1;
+  width: 100px;
+  height: 100px;
+}
+
+.fishFood {
+  position: relative;
+  width: max-content;
+  left: 15px;
+}
+
+.food {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  border: 1px solid #ffb655;
+  animation: falling 0.2s linear infinite;
+  z-index: 0;
+}
+
+.food1 {
+  top: 16px;
+  left: 36px;
+}
+
+.food2 {
+  top: 20px;
+  left: 42px;
+}
+
+.food3 {
+  top: 23px;
+  left: 36px;
+}
+
+.food4 {
+  top: 29px;
+  left: 42px;
+}
+
+.food5 {
+  top: 32.5px;
+  left: 36px;
+}
+
+.food6 {
+  top: 38px;
+  left: 42px;
+}
+
+.food7 {
+  top: 42px;
+  left: 36px;
+}
+
+.food8 {
+  top: 47px;
+  left: 42px;
+}
+
+@keyframes falling {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(9px);
+  }
+}
