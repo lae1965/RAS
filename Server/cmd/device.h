@@ -47,9 +47,7 @@ typedef struct {
   bool (*delete)(char *feederName, HttpError *httpError);
 } FeederService;
 
-extern Filter       *topFilter;
 extern FilterService filterService;
-extern Feeder       *topFeeder;
 extern FeederService feederService;
 
 // Service
@@ -72,18 +70,10 @@ typedef enum {
 bool  parseProperty(const char *json, char *key, void *value, PropType propType, HttpError *httpError);
 char *stringifyProperty(char *json, char *property, void *value, PropType propType, bool lastProperty);
 
-Filter *findFilterByName(char *filterName);
-void    deleteAllFilters();
-bool    deleteOneFilter(char *filterName);
-void    insertNewFilter(Filter *newFilter);
 Filter *parseFilterObject(const char *jsonFilter, HttpError *httpError);
 char   *stringifyFilterObject(Filter *filter);
 char   *stringifyFilterList(void);
 
-Feeder *findFeederByName(char *feederName);
-void    deleteAllFeeders();
-bool    deleteOneFeeder(char *feederName);
-void    insertNewFeeder(Feeder *newFeeder);
 Feeder *parseFeederObject(const char *jsonFeeder, HttpError *httpError);
 char   *stringifyFeederObject(Feeder *feeder);
 char   *stringifyFeederList(void);

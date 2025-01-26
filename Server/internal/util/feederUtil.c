@@ -3,60 +3,7 @@
 #include <string.h>
 
 #include "device.h"
-
-Feeder *topFeeder = NULL;
-
-Feeder *findFeederByName(char *feederName) {
-  Feeder *feeder = topFeeder;
-
-  while (feeder) {
-    if (strcmp(feeder->name, feederName) == 0) return feeder;
-    feeder = feeder->next;
-  }
-
-  return NULL;
-}
-
-void deleteAllFeeders() {
-  if (!topFeeder) return;
-
-  Feeder *feeder = topFeeder, *prevFeeder;
-
-  do {
-    prevFeeder = feeder;
-    feeder     = feeder->next;
-    free(prevFeeder);
-  } while (feeder);
-
-  topFeeder = NULL;
-}
-
-bool deleteOneFeeder(char *feederName) {
-  Feeder *feeder = topFeeder, *prevFeeder;
-
-  while (feeder) {
-    if (strcmp(feederName, feeder->name) == 0) break;
-    prevFeeder = feeder;
-    feeder     = feeder->next;
-  }
-  if (!feeder) return false;
-
-  if (feeder == topFeeder) topFeeder = feeder->next;
-  else prevFeeder->next = feeder->next;
-
-  free(feeder);
-
-  return true;
-}
-
-void insertNewFeeder(Feeder *newFeeder) {
-  if (!topFeeder) topFeeder = newFeeder;
-  else {
-    Feeder *feeder = topFeeder;
-    while (feeder->next) feeder = feeder->next;
-    feeder->next = newFeeder;
-  }
-}
+#include "linked_list.h"
 
 Feeder *parseFeederObject(const char *jsonFeeder, HttpError *httpError) {
   Feeder *feeder = calloc(1, sizeof(Feeder));
@@ -100,26 +47,19 @@ char *stringifyFeederObject(Feeder *feeder) {
 }
 
 char *stringifyFeederList(void) {
-  Feeder *feeder = topFeeder;
-
-  int feedersCount = 0;
-  while (feeder) {
-    feedersCount++;
-    feeder = feeder->next;
-  }
-
-  char *jsonFeeder = malloc(feedersCount * 350 + 5);
+  Node *node         = feederService.list->head;
+  int   feedersCount = feederService.list->size(node);
+  char *jsonFeeder   = malloc(feedersCount * 350 + 5);
 
   char *p = jsonFeeder;
   *p++    = '[';
   *p++    = '\n';
 
-  feeder = topFeeder;
-  while (feeder) {
-    p = stringifyFeeder(p, feeder);
-    if (feeder->next) *p++ = ',';
-    *p++   = '\n';
-    feeder = feeder->next;
+  while (node) {
+    p = stringifyFeeder(p, (Feeder *)(node->content));
+    if (node->next) *p++ = ',';
+    *p++ = '\n';
+    node = node->next;
   }
   *p++ = ']';
   *p++ = '\n';
