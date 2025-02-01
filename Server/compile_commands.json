@@ -12,6 +12,166 @@
       "-I./cmd",
       "-c",
       "-o",
+      "internal/handler/handler.o",
+      "internal/handler/handler.c"
+    ],
+    "directory": "/home/andrey/RAS/Server",
+    "file": "/home/andrey/RAS/Server/internal/handler/handler.c",
+    "output": "/home/andrey/RAS/Server/internal/handler/handler.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Wall",
+      "-Wextra",
+      "-std=c99",
+      "-D_GNU_SOURCE",
+      "-I./pkg/cJSON",
+      "-I./internal/http",
+      "-I./internal/linked_list",
+      "-I./cmd",
+      "-c",
+      "-o",
+      "internal/handler/timerHandler.o",
+      "internal/handler/timerHandler.c"
+    ],
+    "directory": "/home/andrey/RAS/Server",
+    "file": "/home/andrey/RAS/Server/internal/handler/timerHandler.c",
+    "output": "/home/andrey/RAS/Server/internal/handler/timerHandler.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Wall",
+      "-Wextra",
+      "-std=c99",
+      "-D_GNU_SOURCE",
+      "-I./pkg/cJSON",
+      "-I./internal/http",
+      "-I./internal/linked_list",
+      "-I./cmd",
+      "-c",
+      "-o",
+      "internal/http/http.o",
+      "internal/http/http.c"
+    ],
+    "directory": "/home/andrey/RAS/Server",
+    "file": "/home/andrey/RAS/Server/internal/http/http.c",
+    "output": "/home/andrey/RAS/Server/internal/http/http.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Wall",
+      "-Wextra",
+      "-std=c99",
+      "-D_GNU_SOURCE",
+      "-I./pkg/cJSON",
+      "-I./internal/http",
+      "-I./internal/linked_list",
+      "-I./cmd",
+      "-c",
+      "-o",
+      "internal/http/ntp.o",
+      "internal/http/ntp.c"
+    ],
+    "directory": "/home/andrey/RAS/Server",
+    "file": "/home/andrey/RAS/Server/internal/http/ntp.c",
+    "output": "/home/andrey/RAS/Server/internal/http/ntp.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Wall",
+      "-Wextra",
+      "-std=c99",
+      "-D_GNU_SOURCE",
+      "-I./pkg/cJSON",
+      "-I./internal/http",
+      "-I./internal/linked_list",
+      "-I./cmd",
+      "-c",
+      "-o",
+      "internal/linked_list/linked_list.o",
+      "internal/linked_list/linked_list.c"
+    ],
+    "directory": "/home/andrey/RAS/Server",
+    "file": "/home/andrey/RAS/Server/internal/linked_list/linked_list.c",
+    "output": "/home/andrey/RAS/Server/internal/linked_list/linked_list.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Wall",
+      "-Wextra",
+      "-std=c99",
+      "-D_GNU_SOURCE",
+      "-I./pkg/cJSON",
+      "-I./internal/http",
+      "-I./internal/linked_list",
+      "-I./cmd",
+      "-c",
+      "-o",
+      "internal/repo/feederRepo.o",
+      "internal/repo/feederRepo.c"
+    ],
+    "directory": "/home/andrey/RAS/Server",
+    "file": "/home/andrey/RAS/Server/internal/repo/feederRepo.c",
+    "output": "/home/andrey/RAS/Server/internal/repo/feederRepo.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Wall",
+      "-Wextra",
+      "-std=c99",
+      "-D_GNU_SOURCE",
+      "-I./pkg/cJSON",
+      "-I./internal/http",
+      "-I./internal/linked_list",
+      "-I./cmd",
+      "-c",
+      "-o",
+      "internal/repo/filterRepo.o",
+      "internal/repo/filterRepo.c"
+    ],
+    "directory": "/home/andrey/RAS/Server",
+    "file": "/home/andrey/RAS/Server/internal/repo/filterRepo.c",
+    "output": "/home/andrey/RAS/Server/internal/repo/filterRepo.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Wall",
+      "-Wextra",
+      "-std=c99",
+      "-D_GNU_SOURCE",
+      "-I./pkg/cJSON",
+      "-I./internal/http",
+      "-I./internal/linked_list",
+      "-I./cmd",
+      "-c",
+      "-o",
+      "internal/service/feederService.o",
+      "internal/service/feederService.c"
+    ],
+    "directory": "/home/andrey/RAS/Server",
+    "file": "/home/andrey/RAS/Server/internal/service/feederService.c",
+    "output": "/home/andrey/RAS/Server/internal/service/feederService.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Wall",
+      "-Wextra",
+      "-std=c99",
+      "-D_GNU_SOURCE",
+      "-I./pkg/cJSON",
+      "-I./internal/http",
+      "-I./internal/linked_list",
+      "-I./cmd",
+      "-c",
+      "-o",
       "internal/service/filterService.o",
       "internal/service/filterService.c"
     ],
