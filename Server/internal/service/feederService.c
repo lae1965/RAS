@@ -4,7 +4,15 @@
 FeederService feederService;
 
 static bool isNamesEqual(void *content1, void *content2) {
-  return (strcmp(((Feeder *)(content1))->name, (char *)(content2)) == 0);
+  return (strcmp(((Feeder *)(((Device *)content1)->properties))->name, (char *)(content2)) == 0);
+}
+
+static void clearContent(void *content) {
+  Device *device = (Device *)content;
+  if (!device) return;
+  Feeder *feeder = (Feeder *)device->properties;
+  if (feeder) free(feeder);
+  free(device);
 }
 
 static bool add(Feeder *feeder, HttpError *httpError) {
@@ -14,7 +22,15 @@ static bool add(Feeder *feeder, HttpError *httpError) {
     return false;
   }
 
-  feederService.list->push(&feederService.list->head, feeder);
+  Device *device = calloc(1, sizeof(Device));
+  if (!device) {
+    httpError->statusCode = 500;
+    snprintf(httpError->message, 64, "not enough memory to create new feeder");
+    return false;
+  }
+  device->properties = feeder;
+  device->type       = FEEDER;
+  feederService.list->push(&feederService.list->head, device);
   saveFeederList();
 
   return true;
@@ -28,7 +44,7 @@ static Feeder *get(char *feederName, HttpError *httpError) {
     return NULL;
   }
 
-  return (Feeder *)(node->content);
+  return (Feeder *)((Device *)node->content)->properties;
 }
 
 static bool change(Feeder *feederWithNewValues, char *changingFeederName, HttpError *httpError) {
@@ -38,7 +54,7 @@ static bool change(Feeder *feederWithNewValues, char *changingFeederName, HttpEr
     snprintf(httpError->message, 64, "feeder named \"%s\" not exist", changingFeederName);
     return false;
   }
-  Feeder *changingFeeder = (Feeder *)(node->content);
+  Feeder *changingFeeder = (Feeder *)((Device *)node->content)->properties;
 
   // NOLINTNEXTLINE
   strcpy(changingFeeder->name, feederWithNewValues->name);
@@ -57,7 +73,7 @@ static bool delete(char *feederName, HttpError *httpError) {
     return false;
   }
 
-  if (!feederService.list->erase(&feederService.list->head, node, true)) {
+  if (!feederService.list->erase(&feederService.list->head, node, clearContent)) {
     httpError->statusCode = 500;
     snprintf(httpError->message, 64, "falure erasing feeder \"%s\"", feederName);
     return false;
@@ -74,7 +90,7 @@ static bool changePower(char *feederName, HttpError *httpError) {
     return false;
   }
 
-  Feeder *feeder = (Feeder *)(node->content);
+  Feeder *feeder = (Feeder *)((Device *)node->content)->properties;
 
   feeder->isPowerOn = !feeder->isPowerOn;
   saveFeederList();
@@ -82,6 +98,7 @@ static bool changePower(char *feederName, HttpError *httpError) {
 }
 
 void newFeederService(void) {
+  feederService.list        = newSinglyLinkedList();
   feederService.add         = add;
   feederService.get         = get;
   feederService.change      = change;

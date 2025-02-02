@@ -17,7 +17,8 @@ bool saveFeederList(void) {
   }
 
   while (node) {
-    if (fwrite((Feeder *)(node->content), sizeof(Feeder), 1, file) != 1) {
+    Feeder *feeder = (Feeder *)((Device *)node->content)->properties;
+    if (fwrite(feeder, sizeof(Feeder), 1, file) != 1) {
       perror("error saving feederList to file");
       fclose(file);
       return false;
@@ -44,20 +45,31 @@ bool getFeederList(void) {
   }
 
   for (int i = 0; i < feedersCount; i++) {
+    Device *device = calloc(1, sizeof(Device));
+    if (!device) {
+      perror("error allocating memory for feederList");
+      fclose(file);
+      return false;
+    }
+
     Feeder *feeder = malloc(sizeof(Feeder));
     if (!feeder) {
       perror("error allocating memory for feederList");
-      free(feeder);
+      free(device);
       fclose(file);
       return false;
     }
     if (fread(feeder, sizeof(Feeder), 1, file) != 1) {
       perror("error geting feederList from file");
+      free(device);
       free(feeder);
       fclose(file);
       return false;
     }
-    feederService.list->push(&feederService.list->head, feeder);
+
+    device->type       = FEEDER;
+    device->properties = feeder;
+    feederService.list->push(&feederService.list->head, device);
   }
 
   fclose(file);

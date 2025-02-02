@@ -9,6 +9,11 @@
 
 #define MAX_NAME_SIZE 32
 
+typedef enum {
+  FILTER,
+  FEEDER
+} DeviceType;
+
 typedef struct {
   char name[MAX_NAME_SIZE];
   bool isPowerOn;
@@ -21,6 +26,23 @@ typedef struct {
   int  timeOfWashing;
   int  levelOfBeginWashing;
 } Filter;
+
+typedef enum {
+  DISABLED,
+  AWAITING_ROTATION,
+  ROTATING,
+  AWAITING_WASHING,
+  WASHING,
+  AWAITING_FEEDNG,
+  FEEDING
+} DeviceAction;
+
+typedef struct {
+  DeviceType   type;
+  void        *properties;
+  DeviceAction action;
+  int          remainingTime;
+} Device;
 
 typedef struct {
   SinglyLinkedList *list;

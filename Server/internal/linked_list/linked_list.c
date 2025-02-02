@@ -18,7 +18,7 @@ static Node *push(Node **head, void *content) {
   return node;
 }
 
-static bool erase(Node **head, Node *erasingNode, bool isClearContent) {
+static bool erase(Node **head, Node *erasingNode, void (*clearInternalContent)(void *content)) {
   if (*head == NULL) return true;
 
   Node *node = *head, *prevNode = NULL;
@@ -29,20 +29,20 @@ static bool erase(Node **head, Node *erasingNode, bool isClearContent) {
   }
   if (prevNode) prevNode->next = node->next;
   else *head = node->next;
-  if (isClearContent && node->content != NULL) free(node->content);
+  if (clearInternalContent != NULL) clearInternalContent(node->content);
   free(node);
 
   return true;
 }
 
-static void clear(Node **head, bool isClearContent) {
+static void clear(Node **head, void (*clearInternalContent)(void *content)) {
   Node *node = *head, *prevNode;
 
   *head = NULL;
   while (node) {
     prevNode = node;
     node     = node->next;
-    if (isClearContent && prevNode->content != NULL) free(prevNode->content);
+    if (clearInternalContent != NULL) clearInternalContent(prevNode->content);
     free(prevNode);
   }
 }
@@ -101,7 +101,7 @@ SinglyLinkedList *newSinglyLinkedList(void) {
 }
 
 // Деструктор
-void clearSinglyLinkedList(SinglyLinkedList *list, bool isClearContent) {
-  list->clear(&list->head, isClearContent);
+void clearSinglyLinkedList(SinglyLinkedList *list, void (*clearInternalContent)(void *content)) {
+  list->clear(&list->head, clearInternalContent);
   free(list);
 }

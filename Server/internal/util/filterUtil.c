@@ -68,7 +68,7 @@ char *stringifyFilterList(void) {
   *p++    = '\n';
 
   while (node) {
-    p = stringifyFilter(p, (Filter *)(node->content));
+    p = stringifyFilter(p, (Filter *)((Device *)node->content)->properties);
     if (node->next) *p++ = ',';
     *p++ = '\n';
     node = node->next;

@@ -55,8 +55,6 @@ bool syncSystemTime(void) {
   time_t newTime = getNtpTime();
   if (newTime == -1) return false;
 
-  printf("%ld\n", newTime);
-
   struct timeval tv;
   tv.tv_sec  = newTime;
   tv.tv_usec = 0;

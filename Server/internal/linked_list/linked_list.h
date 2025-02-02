@@ -14,14 +14,14 @@ typedef struct node {
 typedef struct {
   Node *head;
   Node *(*push)(Node **head, void *content);
-  bool (*erase)(Node **head, Node *erasingNode, bool isClearContent);
-  void (*clear)(Node **head, bool isClearContent);
+  bool (*erase)(Node **head, Node *erasingNode, void (*clearInternalContent)(void *content));
+  void (*clear)(Node **head, void (*clearInternalContent)(void *content));
   int (*size)(Node *head);
   Node *(*getByNumber)(Node *head, int number);
   Node *(*getByCondition)(Node *head, void *checkingCondition, bool (*checkCondition)(void *context1, void *content2));
 } SinglyLinkedList;
 
 SinglyLinkedList *newSinglyLinkedList(void);
-void              clearSinglyLinkedList(SinglyLinkedList *list, bool isClearContent);
+void              clearSinglyLinkedList(SinglyLinkedList *list, void (*clearInternalContent)(void *content));
 
 #endif

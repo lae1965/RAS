@@ -17,7 +17,8 @@ bool saveFilterList(void) {
   }
 
   while (node) {
-    if (fwrite((Filter *)(node->content), sizeof(Filter), 1, file) != 1) {
+    Filter *filter = (Filter *)((Device *)node->content)->properties;
+    if (fwrite(filter, sizeof(Filter), 1, file) != 1) {
       perror("error saving filterList to file");
       fclose(file);
       return false;
@@ -44,20 +45,31 @@ bool getFilterList(void) {
   }
 
   for (int i = 0; i < filtersCount; i++) {
+    Device *device = calloc(1, sizeof(Device));
+    if (!device) {
+      perror("error allocating memory for filterList");
+      fclose(file);
+      return false;
+    }
+
     Filter *filter = malloc(sizeof(Filter));
     if (!filter) {
       perror("error allocating memory for filterList");
-      free(filter);
+      free(device);
       fclose(file);
       return false;
     }
+
     if (fread(filter, sizeof(Filter), 1, file) != 1) {
       perror("error geting filterList from file");
+      free(device);
       free(filter);
       fclose(file);
       return false;
     }
-    filterService.list->push(&filterService.list->head, filter);
+    device->type       = FILTER;
+    device->properties = filter;
+    filterService.list->push(&filterService.list->head, device);
   }
 
   fclose(file);

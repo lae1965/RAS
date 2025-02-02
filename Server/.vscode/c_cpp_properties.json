@@ -7,9 +7,9 @@
                 "${workspaceFolder}/cmd"
             ],
             "defines": [],
-            "compilerPath": "/usr/bin/clang-18",
+            "compilerPath": "/usr/bin/gcc",
             "cStandard": "c99",
-            "intelliSenseMode": "linux-clang-x64",
+            "intelliSenseMode": "linux-gcc-x64",
             "configurationProvider": "ms-vscode.makefile-tools"
         }
     ],

@@ -56,7 +56,7 @@ char *stringifyFeederList(void) {
   *p++    = '\n';
 
   while (node) {
-    p = stringifyFeeder(p, (Feeder *)(node->content));
+    p = stringifyFeeder(p, (Feeder *)((Device *)node->content)->properties);
     if (node->next) *p++ = ',';
     *p++ = '\n';
     node = node->next;
