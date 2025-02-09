@@ -71,3 +71,79 @@ char *stringifyProperty(char *json, char *property, void *value, PropType propTy
   *p++ = '\n';
   return p;
 }
+
+// static char *messages[] = {
+// 0     "До начала прокрутки:",
+// 1     "До конца прокрутки:",
+// 2     "До начала промывки:",
+// 3     "До конца промывки:",
+// 4     "Уровень воды:"
+// 5     "До начала кормления: ",
+// 6     "До конца кормления: ",
+// 7     "Количество корма: ",
+// };
+
+enum clientAction {
+  _NO_ACTIONS,
+  _ROTATION,
+  _WASHING,
+};
+#define _FEEDING _ROTATION
+
+void createReportJSON(char *buf) {
+  char *p = buf;
+  p += sprintf(p, "data:{\"type\":\"everySecondReport\",");
+
+  p += sprintf(p, "\"filters\":[");
+  Node *node = filterService.list->head;
+  while (node) {
+    enum clientAction ca     = _NO_ACTIONS;
+    Device           *device = (Device *)node->content;
+    Filter           *filter = (Filter *)device->properties;
+    DeviceAction     *da     = device->da;
+    *p++                     = '{';
+    if (!(da[0].action == DISABLED && da[1].action == DISABLED)) {
+      p += sprintf(p, "\"name\":\"%s\",", filter->name);
+      p += sprintf(p, "\"messageList\":[");
+
+      bool wasPrevAction = false;
+      for (int i = 0; i < 2; i++) {
+        if (da[i].action != DISABLED) {
+          if (da[i].action == ROTATING && ca != _WASHING) ca = _ROTATION;
+          if (da[i].action == WASHING) ca = _WASHING;
+
+          if (wasPrevAction) *p++ = ',';
+          p += sprintf(p, "{\"message\":%d,\"time\":%d}", da[i].action - 1, da[i].remainingTime);
+          wasPrevAction = true;
+        }
+      }
+      p += sprintf(p, "],\"action\":%d", ca);
+    }
+    *p++ = '}';
+    node = node->next;
+    if (node) *p++ = ',';
+  }
+  p += sprintf(p, "],");
+
+  p += sprintf(p, "\"feeders\":[");
+  node = feederService.list->head;
+  while (node) {
+    Device       *device = (Device *)node->content;
+    Feeder       *feeder = (Feeder *)device->properties;
+    DeviceAction *da     = device->da;
+    *p++                 = '{';
+    if (da[0].action != DISABLED) {
+      p += sprintf(p, "\"name\":\"%s\",", feeder->name);
+      p += sprintf(p, "\"messageList\":[");
+      p += sprintf(p, "{\"message\":%d,\"time\":%d}", da[0].action, da[0].remainingTime);
+      p += sprintf(p, "],\"action\":%d", da[0].action - 5);
+    }
+    *p++ = '}';
+    node = node->next;
+    if (node) *p++ = ',';
+  }
+  *p++ = ']';
+
+  p += sprintf(p, "}\n\n");
+  *p = '\0';
+}

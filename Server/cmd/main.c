@@ -9,12 +9,14 @@ void timerHandler(int);
 bool syncSystemTime(void);
 
 int main() {
-  Http *phttp = http_init(PORT);
-  if (phttp == NULL) return EXIT_FAILURE;
+  if (!http_init(PORT)) return EXIT_FAILURE;
+
   newFilterService();
   newFeederService();
   getFilterList();
   getFeederList();
+  filterListWorkingInit();
+  feederListWorkingInit();
   printf("Server has been started on %d port...\n", PORT);
 
   syncSystemTime();
@@ -38,9 +40,9 @@ int main() {
   setitimer(ITIMER_REAL, &timer, NULL);
 
   while (1) {
-    http_listener(phttp);
+    http_listener();
   }
 
-  http_destroy(&phttp);
+  http_destroy();
   return EXIT_SUCCESS;
 }

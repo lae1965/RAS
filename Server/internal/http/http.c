@@ -13,7 +13,9 @@ HttpStatus httpStatuses[] = {
     {500, "Internal Server Error"}
 };
 
-void handler(Http *phttp, int client_fd);
+Http http;
+
+void handler(int client_fd);
 
 static void formatUriParam(char *decodedString, char *src, int srcLength) {
   char *p = decodedString;
@@ -35,85 +37,85 @@ static void formatUriParam(char *decodedString, char *src, int srcLength) {
   *p = '\0';
 }
 
-Http *http_init(uint16_t port) {
-  Http *phttp = calloc(1, sizeof(Http));
-  int   opt   = 1;
+bool http_init(uint16_t port) {
+  int opt = 1;
 
-  phttp->epoll_fd = -1;  // Для корректной отработки http_destroy
+  http.epoll_fd = -1;  // Для корректной отработки http_destroy
 
   // Создаем сокет
-  if ((phttp->server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
+  if ((http.server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
     perror("socket failed");
-    http_destroy(&phttp);
-    return NULL;
+    return false;
   }
 
   // Установить опции сокета
-  setsockopt(phttp->server_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+  setsockopt(http.server_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 
   // Подготовка структуры адреса
-  phttp->address.sin_family      = AF_INET;
-  phttp->address.sin_addr.s_addr = INADDR_ANY;
-  phttp->address.sin_port        = htons(port);
+  http.address.sin_family      = AF_INET;
+  http.address.sin_addr.s_addr = INADDR_ANY;
+  http.address.sin_port        = htons(port);
 
   // Привязка сокета к порту
-  if (bind(phttp->server_fd, (struct sockaddr *)&phttp->address, sizeof(struct sockaddr)) < 0) {
+  if (bind(http.server_fd, (struct sockaddr *)&http.address, sizeof(struct sockaddr)) < 0) {
     perror("bind failed");
-    http_destroy(&phttp);
-    return NULL;
+    http_destroy();
+    return false;
   }
 
   // Подготовка к прослушиванию
-  if (listen(phttp->server_fd, 5) < 0) {
+  if (listen(http.server_fd, 5) < 0) {
     perror("listen failed");
-    http_destroy(&phttp);
-    return NULL;
+    http_destroy();
+    return false;
   }
 
   // Создаем epoll экземпляр
-  phttp->epoll_fd = epoll_create1(0);
-  if (phttp->epoll_fd == -1) {
+  http.epoll_fd = epoll_create1(0);
+  if (http.epoll_fd == -1) {
+    http_destroy();
     perror("epoll_create1");
-    http_destroy(&phttp);
-    return NULL;
+    return false;
   }
 
   // Регистрация серверного сокета
   struct epoll_event ev;
   ev.events  = EPOLLIN;
-  ev.data.fd = phttp->server_fd;
-  if (epoll_ctl(phttp->epoll_fd, EPOLL_CTL_ADD, phttp->server_fd, &ev) == -1) {
+  ev.data.fd = http.server_fd;
+  if (epoll_ctl(http.epoll_fd, EPOLL_CTL_ADD, http.server_fd, &ev) == -1) {
+    http_destroy();
     perror("epoll_ctl: server_fd");
-    http_destroy(&phttp);
     return NULL;
   }
 
-  return phttp;
+  return true;
 }
 
-void http_destroy(Http **pphttp) {
-  if (*pphttp != NULL) {
-    if ((*pphttp)->server_fd > 0) close((*pphttp)->server_fd);
-    if ((*pphttp)->epoll_fd >= 0) close((*pphttp)->epoll_fd);
-    free(*pphttp);
-    *pphttp = NULL;
+void http_destroy(void) {
+  if (http.server_fd > 0) {
+    close(http.server_fd);
+    http.server_fd = 0;
+  }
+  if (http.epoll_fd >= 0) {
+    close(http.epoll_fd);
+    http.epoll_fd = -1;
   }
 }
 
-void http_listener(Http *phttp) {
+void http_listener(void) {
   int addrlen = sizeof(struct sockaddr_in);
 
-  int n = epoll_wait(phttp->epoll_fd, phttp->events, MAX_EVENTS, 1000);  // тайм-аут 1000 мс
+  int n = epoll_wait(http.epoll_fd, http.events, MAX_EVENTS, 1000);  // тайм-аут 1000 мс
 
   for (int i = 0; i < n; i++) {
-    if (phttp->events[i].data.fd == phttp->server_fd) {  // Новый клиент SSE или запрос по REST API
-      int client_fd = accept(phttp->server_fd, (struct sockaddr *)&phttp->address, (socklen_t *)&addrlen);
+    if (http.events[i].data.fd == http.server_fd) {  // Новый клиент SSE или запрос по REST API
+      int client_fd = accept(http.server_fd, (struct sockaddr *)&http.address, (socklen_t *)&addrlen);
       if (client_fd < 0) {
         perror("accept");
         continue;
       }
 
-      handler(phttp, client_fd);
+      handler(client_fd);
     }
   }
 }
@@ -199,14 +201,14 @@ bool isEndpointEqual(RequestParts *request, char *endpoint) {
   char *uri          = request->uri;
   int   uri_len      = strlen(uri);
   int   endpoint_len = strlen(endpoint);
+  bool  isParamExist = false;
 
   char *q = strchr(endpoint, ':');  // Обрабатываем вариант /endpoint/:param
+  char *p;
   if (q != NULL) {
-    char *p = strrchr(uri, '/');
+    p = strrchr(uri, '/');
     if (p == NULL) return false;
-    // NOLINTNEXTLINE
-    strcpy(request->query[0].key, q + 1);
-    formatUriParam(request->query[0].value, p + 1, strlen(p + 1));
+    isParamExist = true;
     endpoint_len = q - endpoint;
     uri_len      = p - uri;
   }
@@ -214,8 +216,14 @@ bool isEndpointEqual(RequestParts *request, char *endpoint) {
   if (endpoint_len > 1 && endpoint[endpoint_len - 1] == '/') endpoint_len--;
   if (uri_len > 1 && uri[uri_len - 1] == '/') uri_len--;
 
-  if (endpoint_len != uri_len) return false;
-  return (strncmp(endpoint, uri, uri_len) == 0);
+  if (endpoint_len != uri_len || strncmp(endpoint, uri, uri_len) != 0) return false;
+  if (isParamExist) {
+    // NOLINTNEXTLINE
+    strcpy(request->query[0].key, q + 1);
+    formatUriParam(request->query[0].value, p + 1, strlen(p + 1));
+  }
+
+  return true;
 }
 
 // массив headers должен завершаться элементом NULL
@@ -269,16 +277,16 @@ bool sendResponse(int client_fd, int status, char **headers, char *body, bool di
   return true;
 }
 
-void sendSSE(int *subscriber_sockets, char *message) {
+void sendSSE(char *message) {
   for (int i = 0; i < MAX_EVENTS; i++) {
-    if (subscriber_sockets[i] != 0) {
+    if (http.subscriber_sockets[i] != 0) {
       int       err  = 0;
       socklen_t len  = sizeof(err);
-      int       test = getsockopt(subscriber_sockets[i], SOL_SOCKET, SO_ERROR, &err, &len);
+      int       test = getsockopt(http.subscriber_sockets[i], SOL_SOCKET, SO_ERROR, &err, &len);
       if (test == -1 || err) {
-        close(subscriber_sockets[i]);
-        subscriber_sockets[i] = 0;
-      } else send(subscriber_sockets[i], message, strlen(message), 0);
+        close(http.subscriber_sockets[i]);
+        http.subscriber_sockets[i] = 0;
+      } else send(http.subscriber_sockets[i], message, strlen(message), 0);
     }
   }
 }

@@ -67,3 +67,52 @@ char *stringifyFeederList(void) {
 
   return jsonFeeder;
 }
+
+void feederWorkingInit(Device *device) {
+  Feeder *feeder = (Feeder *)device->properties;
+
+  device->da[0].action = DISABLED;
+
+  if (!feeder->isPowerOn) return;
+
+  device->da->action        = AWAITING_FEEDING;
+  device->da->remainingTime = feeder->timeBetweenFeedings;
+}
+
+void feederWorkingCorrect(Device *device) {
+  Feeder *feeder = (Feeder *)device->properties;
+
+  if (device->da->action == DISABLED) return;
+  if (device->da->remainingTime > 1) device->da->remainingTime--;
+  else {
+    switch (device->da->action) {
+      case AWAITING_FEEDING:
+        device->da->action        = FEEDING;
+        device->da->remainingTime = feeder->timeOfFeeding;
+        break;
+      case FEEDING:
+        feederWorkingInit(device);
+        break;
+      default:
+        break;
+    }
+  }
+}
+
+void feederListWorkingInit(void) {
+  Node *node = feederService.list->head;
+
+  while (node) {
+    feederWorkingInit((Device *)node->content);
+    node = node->next;
+  }
+}
+
+void feederListWorkingCorrect(void) {
+  Node *node = feederService.list->head;
+
+  while (node) {
+    feederWorkingCorrect((Device *)node->content);
+    node = node->next;
+  }
+}

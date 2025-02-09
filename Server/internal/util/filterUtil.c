@@ -79,3 +79,88 @@ char *stringifyFilterList(void) {
 
   return jsonFilter;
 }
+
+void filterWorkingInit(Device *device) {
+  Filter *filter = (Filter *)device->properties;
+
+  device->da[0].action = device->da[1].action = DISABLED;
+
+  if (!filter->isPowerOn) return;
+
+  if (filter->isWithDryRotation) {
+    device->da[0].action        = AWAITING_ROTATION;
+    device->da[0].remainingTime = filter->timeBetweenRotations;
+  }
+  if (filter->isWithTimerWashing) {
+    device->da[1].action        = AWAITING_WASHING;
+    device->da[1].remainingTime = filter->timeBetweenWashings;
+  }
+}
+
+void filterWorkingCorrect(Device *device) {
+  Filter *filter = (Filter *)device->properties;
+
+  if (!filter->isPowerOn) return;
+
+  DeviceAction *rotate = &device->da[0];
+  DeviceAction *wash   = &device->da[1];
+
+  if (rotate->action == DISABLED && wash->action == DISABLED) return;
+
+  if (rotate->action == DISABLED && filter->isWithDryRotation && wash->remainingTime == 1 && wash->action == WASHING) {
+    filterWorkingInit(device);
+    return;
+  }
+
+  if (wash->action == DISABLED && filter->isWithTimerWashing && rotate->remainingTime == 1 && rotate->action == ROTATING) {
+    filterWorkingInit(device);
+    return;
+  }
+
+  if (rotate->action != DISABLED) {
+    if (rotate->remainingTime > 1) rotate->remainingTime--;
+    else {
+      if (rotate->action == AWAITING_ROTATION) {
+        rotate->action        = ROTATING;
+        rotate->remainingTime = filter->timeOfRotation;
+      } else {
+        if (wash->action == AWAITING_WASHING && wash->remainingTime < filter->timeBetweenRotations) {
+          rotate->action = DISABLED;
+        } else if (!filter->isWithDryRotation) filterWorkingInit(device);
+        else {
+          rotate->action        = AWAITING_ROTATION;
+          rotate->remainingTime = filter->timeBetweenRotations;
+        }
+      }
+    }
+  }
+
+  if (wash->action != DISABLED) {
+    if (wash->remainingTime > 1) wash->remainingTime--;
+    else {
+      if (wash->action == AWAITING_WASHING) {
+        rotate->action      = DISABLED;
+        wash->action        = WASHING;
+        wash->remainingTime = filter->timeOfWashing;
+      } else filterWorkingInit(device);
+    }
+  }
+}
+
+void filterListWorkingInit(void) {
+  Node *node = filterService.list->head;
+
+  while (node) {
+    filterWorkingInit((Device *)node->content);
+    node = node->next;
+  }
+}
+
+void filterListWorkingCorrect(void) {
+  Node *node = filterService.list->head;
+
+  while (node) {
+    filterWorkingCorrect((Device *)node->content);
+    node = node->next;
+  }
+}

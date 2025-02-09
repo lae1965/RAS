@@ -33,6 +33,7 @@ static bool add(Filter *filter, HttpError *httpError) {
   device->properties = filter;
   device->type       = FILTER;
   filterService.list->push(&filterService.list->head, device);
+  filterWorkingInit(device);
   saveFilterList();
 
   return true;
@@ -56,7 +57,8 @@ static bool change(Filter *filterWithNewValues, char *changingFilterName, HttpEr
     snprintf(httpError->message, 64, "filter named \"%s\" not exist", changingFilterName);
     return false;
   }
-  Filter *changingFilter = (Filter *)((Device *)node->content)->properties;
+  Device *device         = (Device *)node->content;
+  Filter *changingFilter = (Filter *)device->properties;
 
   // NOLINTNEXTLINE
   strcpy(changingFilter->name, filterWithNewValues->name);
@@ -69,6 +71,7 @@ static bool change(Filter *filterWithNewValues, char *changingFilterName, HttpEr
   changingFilter->timeOfWashing        = filterWithNewValues->timeOfWashing;
   changingFilter->levelOfBeginWashing  = filterWithNewValues->levelOfBeginWashing;
 
+  filterWorkingInit(device);
   saveFilterList();
   return true;
 }
@@ -98,18 +101,61 @@ static bool changePower(char *filterName, HttpError *httpError) {
     return false;
   }
 
-  Filter *filter = (Filter *)((Device *)node->content)->properties;
+  Device *device = (Device *)node->content;
+  Filter *filter = (Filter *)device->properties;
 
   filter->isPowerOn = !filter->isPowerOn;
+  filterWorkingInit(device);
   saveFilterList();
   return filter->isPowerOn;
 }
 
+static bool forcedRotation(char *filterName, HttpError *httpError) {
+  Node *node = filterService.list->getByCondition(filterService.list->head, filterName, isNamesEqual);
+  if (!node) {
+    httpError->statusCode = 404;
+    snprintf(httpError->message, 64, "filter named \"%s\" not exist", filterName);
+    return false;
+  }
+
+  Device *device = (Device *)node->content;
+  Filter *filter = (Filter *)device->properties;
+
+  device->da[0].action = ROTATING;
+  if (filter->isWithDryRotation) device->da[0].remainingTime = filter->timeOfRotation;
+  else device->da[0].remainingTime = 30;
+  device->da[1].action = DISABLED;
+
+  return true;
+}
+
+static bool forcedWashing(char *filterName, HttpError *httpError) {
+  Node *node = filterService.list->getByCondition(filterService.list->head, filterName, isNamesEqual);
+  if (!node) {
+    httpError->statusCode = 404;
+    snprintf(httpError->message, 64, "filter named \"%s\" not exist", filterName);
+    return false;
+  }
+
+  Device *device = (Device *)node->content;
+  Filter *filter = (Filter *)device->properties;
+
+  device->da[1].action = WASHING;
+  if (filter->isWithTimerWashing) device->da[1].remainingTime = filter->timeOfWashing;
+  else device->da[1].remainingTime = 30;
+  device->da[0].action = DISABLED;
+
+  return true;
+}
+
 void newFilterService(void) {
-  filterService.list        = newSinglyLinkedList();
-  filterService.add         = add;
-  filterService.get         = get;
-  filterService.change      = change;
-  filterService.changePower = changePower;
-  filterService.delete      = delete;
+  filterService.list           = newSinglyLinkedList();
+  filterService.add            = add;
+  filterService.get            = get;
+  filterService.change         = change;
+  filterService.changePower    = changePower;
+  filterService.delete         = delete;
+  filterService.delete         = delete;
+  filterService.forcedRotation = forcedRotation;
+  filterService.forcedWashing  = forcedWashing;
 }

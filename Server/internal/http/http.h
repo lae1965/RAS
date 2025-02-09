@@ -13,7 +13,7 @@
 #define BUFFER_SIZE        1024
 #define QUERY_KEY_LENGTH   16
 #define QUERY_VALUE_LENGTH 32
-#define URI_LENGTH         64
+#define URI_LENGTH         128
 #define QUERY_COUNT        16
 #define JSON_BODY_LENGTH   512
 
@@ -61,14 +61,15 @@ typedef struct {
 
 extern char      *methodList[];
 extern HttpStatus httpStatuses[];
+extern Http       http;
 
-Http         *http_init(uint16_t port);
-void          http_listener(Http *phttp);
-void          http_destroy(Http **pphttp);
+bool          http_init(uint16_t port);
+void          http_listener(void);
+void          http_destroy(void);
 RequestParts *parseRequest(char *p_http_request);
 bool          isEndpointEqual(RequestParts *request, char *endpoint);
 char         *createHttpResponse(int status, char **headers, char *body, bool disableContentLength);
 bool          sendResponse(int client_fd, int status, char **headers, char *body, bool disableContentLength);
-void          sendSSE(int *subscriber_sockets, char *message);
+void          sendSSE(char *message);
 
 #endif
