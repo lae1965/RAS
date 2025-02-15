@@ -1,34 +1,37 @@
 import { create } from 'zustand';
-import { FeederActions } from '../constants';
-
-export interface InternalFeederType {
-  action: FeederActions;
-  isEmergencyLevel: boolean;
-}
+import {
+  DeviceActions,
+  InternalDeviceType,
+  RecursivePartial,
+  SSEPropertyList,
+} from '../types';
 
 export interface FeederType {
   name: string;
   isPowerOn: boolean;
   timeBetweenFeedings: number;
   timeOfFeeding: number;
-  internal?: InternalFeederType;
+  internal: InternalDeviceType;
 }
 
-type PartialFeeder = Partial<FeederType>;
-
-interface FilterStore {
+interface FeederStore {
   feederList: FeederType[];
-  initialInternal: InternalFeederType;
+  initialInternal: InternalDeviceType;
   initialFeeder: FeederType;
   addNewFeeder: (feeder: FeederType) => void;
-  deleteFeeder: (fieederName: string) => void;
-  changeFeeder: (feederOldName: string, changingProps: PartialFeeder) => void;
+  deleteFeeder: (feederName: string) => void;
+  changeFeeder: (
+    feederOldName: string,
+    changingProps: RecursivePartial<FeederType>
+  ) => void;
   setFeederList: (feederListData: FeederType[]) => void;
+  setInternalToFeeder: (internalList: SSEPropertyList[]) => void;
 }
 
-export const useFeederStore = create<FilterStore>((set, get) => {
+export const useFeederStore = create<FeederStore>((set, get) => {
   const initialInternal = {
-    action: FeederActions.NO_ACTIONS,
+    action: DeviceActions.NO_ACTIONS,
+    messages: [],
     isEmergencyLevel: false,
   };
 
@@ -87,9 +90,44 @@ export const useFeederStore = create<FilterStore>((set, get) => {
         throw new Error(`Feeder with name ${feederOldName} not exist`);
 
       set({
-        feederList: feederList.map((feeder, index) =>
-          feederIndex === index ? { ...feeder, ...changingProps } : feeder
-        ),
+        feederList: <FeederType[]>feederList.map((feeder, index) => {
+          if (feederIndex !== index) return feeder;
+          const changingFeeder: RecursivePartial<FeederType> = {
+            ...feeder,
+            ...changingProps,
+          };
+          if (changingProps.internal)
+            changingFeeder.internal = {
+              ...changingFeeder.internal,
+              messages: [
+                ...(changingFeeder.internal?.messages || []),
+                ...(changingProps.internal.messages || []),
+              ],
+              ...changingProps.internal,
+            };
+          return changingFeeder;
+        }),
+      });
+    },
+    setInternalToFeeder: (internalList) => {
+      const { feederList } = get();
+      set({
+        feederList: feederList.map((feeder) => {
+          const _internal = internalList.find(
+            (internalItem) =>
+              internalItem.name !== undefined &&
+              internalItem.name === feeder.name
+          );
+          if (!_internal) return feeder;
+          return {
+            ...feeder,
+            internal: {
+              isEmergencyLevel: false,
+              action: _internal.action,
+              messages: [..._internal.messageList],
+            },
+          };
+        }),
       });
     },
   };

@@ -1,6 +1,6 @@
-import { InputError } from '../constants';
 import { FeederType } from '../store/feederStore';
 import { FilterType } from '../store/filterStore';
+import { InputError } from '../types';
 
 enum LocalError {
   NO_ERROR = 0,

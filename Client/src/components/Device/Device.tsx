@@ -3,23 +3,21 @@ import { useEffect, useState } from 'react';
 import styles from './Device.module.css';
 
 import { Indicator } from '../Icons/Indicator/Indicator';
-import {
-  deviceButtonsList,
-  Devices,
-  FeederActions,
-  FilterActions,
-  IndicatorColors,
-} from '../../constants';
+import { deviceButtonsList } from '../../constants';
 import { DeviceMessages } from './DeviceMessages/DeviceMessages';
-import { FilterType } from '../../store/filterStore';
 import { DrumFilter } from '../DrumFilter/DrumFilter';
-import { FeederType } from '../../store/feederStore';
 import { Feeder } from '../Feeder/Feeder';
-import { fetchChangeDevicePower } from '../../api/deviceAPI';
+import { fetchShortCommands } from '../../api/deviceAPI';
+import {
+  Devices,
+  DeviceActions,
+  IndicatorColors,
+  DeviceType,
+} from '../../types';
 
 interface PropsDevice extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   deviceType: Devices;
-  device: FilterType | FeederType;
+  device: DeviceType;
 }
 
 export const Device: React.FC<PropsDevice> = ({ deviceType, device }) => {
@@ -30,8 +28,8 @@ export const Device: React.FC<PropsDevice> = ({ deviceType, device }) => {
     if (deviceType === Devices.FEEDER) return;
     let intervalId: number | null = null;
     if (
-      device.internal!.action != undefined &&
-      device.internal!.action > FilterActions.NO_ACTIONS
+      device.internal.action != undefined &&
+      device.internal.action > DeviceActions.NO_ACTIONS
     ) {
       intervalId = setInterval(() => {
         setRotation((prev) => (prev + 1) % 360);
@@ -49,7 +47,21 @@ export const Device: React.FC<PropsDevice> = ({ deviceType, device }) => {
 
   const handleChangePower = async () => {
     try {
-      await fetchChangeDevicePower(device.name, deviceType);
+      await fetchShortCommands(device.name, deviceType, 'change_power');
+    } catch {
+      return;
+    }
+  };
+
+  const handleClick = async (index: number) => {
+    let command;
+    if (index === 0) {
+      if (deviceType === Devices.DRUM_FILTER) command = 'forced_rotation';
+      else command = 'forced_feeding';
+    } else command = 'forced_washing';
+
+    try {
+      await fetchShortCommands(device.name, deviceType, command);
     } catch {
       return;
     }
@@ -73,15 +85,15 @@ export const Device: React.FC<PropsDevice> = ({ deviceType, device }) => {
           <div>
             {(deviceType === Devices.DRUM_FILTER && (
               <DrumFilter
-                isSpray={device.internal!.action === FilterActions.WASHING}
+                isSpray={device.internal.action === DeviceActions.WASHING}
                 rotation={rotation}
               />
             )) || (
               <Feeder
-                isFeeding={device.internal!.action === FeederActions.FEEDING}
+                isFeeding={device.internal.action === DeviceActions.FEEDING}
               />
             )}
-            {device.internal!.isEmergencyLevel && (
+            {device.internal.isEmergencyLevel && (
               <div className={styles.error}>
                 <Indicator color='red' className={styles.smallIndicator} />
                 <p>Аварийный уровень!!!</p>
@@ -89,9 +101,8 @@ export const Device: React.FC<PropsDevice> = ({ deviceType, device }) => {
             )}
           </div>
           <DeviceMessages
-            action={device.internal!.action}
-            device={device}
-            isShowMessages={device.isPowerOn}
+            messages={device.internal.messages}
+            isShow={device.isPowerOn}
           />
         </div>
         <div className={styles.addActions}>
@@ -99,7 +110,13 @@ export const Device: React.FC<PropsDevice> = ({ deviceType, device }) => {
             <button
               key={index}
               className={styles.actionButton}
-              disabled={!device.isPowerOn}
+              disabled={
+                !device.isPowerOn ||
+                device.internal.action > DeviceActions.NO_ACTIONS
+              }
+              onClick={() => {
+                handleClick(index);
+              }}
             >
               {buttonText}
             </button>

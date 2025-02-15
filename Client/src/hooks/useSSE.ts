@@ -1,11 +1,18 @@
 import { useEffect, useRef } from 'react';
-import { useFilterStore } from '../store/filterStore';
-import { useFeederStore } from '../store/feederStore';
+import { FilterType, useFilterStore } from '../store/filterStore';
+import { FeederType, useFeederStore } from '../store/feederStore';
+import { DeviceActions, RecursivePartial } from '../types';
 
 export const useSSE = async () => {
   const eventSourceRef = useRef<EventSource | null>(null);
   const changeFilter = useFilterStore((store) => store.changeFilter);
+  const setInternalToFilter = useFilterStore(
+    (store) => store.setInternalToFilter
+  );
   const changeFeeder = useFeederStore((store) => store.changeFeeder);
+  const setInternalToFeeder = useFeederStore(
+    (store) => store.setInternalToFeeder
+  );
 
   useEffect(() => {
     eventSourceRef.current = new EventSource(
@@ -15,11 +22,33 @@ export const useSSE = async () => {
     eventSourceRef.current.onmessage = (event: MessageEvent) => {
       const data = JSON.parse(event.data);
       switch (data.type) {
-        case 'changeFilterPower':
-          changeFilter(data.name, { isPowerOn: data.isPowerOn });
+        case 'changeFilterPower': {
+          const changedProps: RecursivePartial<FilterType> = {
+            isPowerOn: data.isPowerOn,
+          };
+          if (!data.isPowerOn) {
+            changedProps.internal = {
+              action: DeviceActions.NO_ACTIONS,
+            };
+          }
+          changeFilter(data.name, changedProps);
           break;
-        case 'changeFeederPower':
-          changeFeeder(data.name, { isPowerOn: data.isPowerOn });
+        }
+        case 'changeFeederPower': {
+          const changedProps: RecursivePartial<FeederType> = {
+            isPowerOn: data.isPowerOn,
+          };
+          if (!data.isPowerOn) {
+            changedProps.internal = {
+              action: DeviceActions.NO_ACTIONS,
+            };
+          }
+          changeFeeder(data.name, changedProps);
+          break;
+        }
+        case 'everySecondReport':
+          setInternalToFilter(data.filters);
+          setInternalToFeeder(data.feeders);
           break;
         default:
           break;

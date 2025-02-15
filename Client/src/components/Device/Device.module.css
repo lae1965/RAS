@@ -80,11 +80,6 @@
   border-radius: 20px;
 }
 
-.actionButton:disabled:hover,
-.actionButton:disabled:active {
-  background-color: #ffe55e;
-}
-
 @keyframes blinking {
   0%,
   25%,

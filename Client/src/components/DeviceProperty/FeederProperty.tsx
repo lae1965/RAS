@@ -5,7 +5,6 @@ import { useInput } from '../../hooks/useInput';
 import { useTimeInput } from '../../hooks/useTimeInput';
 import { TextInput } from '../TextInput/TextInput';
 import { TimeInput } from '../TimeInput/TimeInput';
-import { Devices, FeederActions, InputError } from '../../constants';
 import { DeleteIcon } from '../Icons/DeleteIcon';
 import { Dialog } from '../Dialog/Dialog';
 import { DeleteDialog } from '../DeleteDialog/DeleteDialog';
@@ -16,6 +15,7 @@ import {
   fetchRemoveDevice,
   fetchUpdateDevice,
 } from '../../api/deviceAPI';
+import { DeviceActions, Devices, InputError } from '../../types';
 
 interface FeederPropertyProps extends React.HTMLAttributes<HTMLDivElement> {
   onClose: () => void;
@@ -48,7 +48,8 @@ export const FeederProperty: React.FC<FeederPropertyProps> = ({
       timeBetweenFeedings: timeBetweenFeedings.time,
       timeOfFeeding: timeOfFeeding.time,
       internal: {
-        action: FeederActions.NO_ACTIONS,
+        action: DeviceActions.NO_ACTIONS,
+        messages: [],
         isEmergencyLevel: false,
       },
     };
@@ -120,6 +121,7 @@ export const FeederProperty: React.FC<FeederPropertyProps> = ({
           description='Время между кормлением:'
           timeReturn={timeBetweenFeedings}
           readonly={isReadOnly}
+          withHours={true}
         />
         <TimeInput
           description='Время кормления:'

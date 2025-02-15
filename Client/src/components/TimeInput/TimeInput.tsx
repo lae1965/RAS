@@ -9,12 +9,14 @@ interface TimeInputProps extends React.LabelHTMLAttributes<HTMLLabelElement> {
   description?: string;
   timeReturn: TimeReturn;
   readonly?: boolean;
+  withHours?: boolean;
 }
 
 export const TimeInput: React.FC<TimeInputProps> = ({
   description = '',
   timeReturn,
   readonly = false,
+  withHours = false,
 }) => {
   const validateValue = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -26,9 +28,16 @@ export const TimeInput: React.FC<TimeInputProps> = ({
     return value.toString();
   };
 
+  const hoursInput = useInput(
+    'hours',
+    Math.floor(timeReturn.time / 3600)
+      .toString()
+      .padStart(2, '0'),
+    (e) => validateValue(e, 99)
+  );
   const minutesInput = useInput(
     'minutes',
-    Math.floor(timeReturn.time / 60)
+    Math.floor((timeReturn.time % 3600) / 60)
       .toString()
       .padStart(2, '0'),
     (e) => validateValue(e, 99)
@@ -40,8 +49,13 @@ export const TimeInput: React.FC<TimeInputProps> = ({
   );
 
   useEffect(() => {
+    hoursInput.setValue(
+      Math.floor(timeReturn.time / 3600)
+        .toString()
+        .padStart(2, '0')
+    );
     minutesInput.setValue(
-      Math.floor(timeReturn.time / 60)
+      Math.floor((timeReturn.time % 3600) / 60)
         .toString()
         .padStart(2, '0')
     );
@@ -59,7 +73,9 @@ export const TimeInput: React.FC<TimeInputProps> = ({
     else secondsInput.setValue(newValue);
 
     timeReturn.setTime(
-      +minutesInput.input.value! * 60 + +secondsInput.input.value!
+      +hoursInput.input.value! * 3600 +
+        +minutesInput.input.value! * 60 +
+        +secondsInput.input.value!
     );
   };
 
@@ -67,6 +83,18 @@ export const TimeInput: React.FC<TimeInputProps> = ({
     <label className={styles.label}>
       {description}
       <div className={styles.time}>
+        {withHours && (
+          <>
+            <NumberInput
+              min={0}
+              max={99}
+              inputReturn={hoursInput}
+              handlerBlur={handlerBlur}
+              disabled={readonly}
+            />
+            :
+          </>
+        )}
         <NumberInput
           min={0}
           max={99}

@@ -2,11 +2,12 @@ import { Link } from 'react-router';
 
 import styles from './Main.module.css';
 
-import { Devices, indicatorData, infoData } from '../../constants';
+import { indicatorData, infoData } from '../../constants';
 import { Indicator } from '../../components/Icons/Indicator/Indicator';
 import { Device } from '../../components/Device/Device';
 import { useFilterStore } from '../../store/filterStore';
 import { useFeederStore } from '../../store/feederStore';
+import { Devices } from '../../types';
 
 export const Main = () => {
   const filterList = useFilterStore((state) => state.filterList);

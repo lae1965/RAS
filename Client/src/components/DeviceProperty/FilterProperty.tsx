@@ -8,7 +8,6 @@ import { Checkbox } from '../Checkbox/Checkbox';
 import { NumberInput } from '../NumberInput/NumberInput';
 import { TextInput } from '../TextInput/TextInput';
 import { TimeInput } from '../TimeInput/TimeInput';
-import { Devices, FilterActions, InputError } from '../../constants';
 import { DeleteIcon } from '../Icons/DeleteIcon';
 import { Dialog } from '../Dialog/Dialog';
 import { DeleteDialog } from '../DeleteDialog/DeleteDialog';
@@ -18,6 +17,7 @@ import {
   fetchRemoveDevice,
   fetchUpdateDevice,
 } from '../../api/deviceAPI';
+import { DeviceActions, Devices, InputError } from '../../types';
 
 interface FilterPropertyProps extends React.HTMLAttributes<HTMLDivElement> {
   onClose: () => void;
@@ -86,7 +86,8 @@ export const FilterProperty: React.FC<FilterPropertyProps> = ({
       timeOfWashing: timeOfWashing.time,
       levelOfBeginWashing: +level.input.value!,
       internal: {
-        action: FilterActions.NO_ACTIONS,
+        action: DeviceActions.NO_ACTIONS,
+        messages: [],
         isEmergencyLevel: false,
       },
     };

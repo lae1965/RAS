@@ -1,35 +1,39 @@
-import { useEffect, useState } from 'react';
-
+import { deviceMessageList } from '../../../constants';
+import { DeviceMessageType } from '../../../types';
 import styles from './DeviceMessages.module.css';
 
-import { DeviceType, FeederActions, FilterActions } from '../../../constants';
-import { getMessagesList } from '../../../util/getMessagesList';
-
 interface DeviceMessagesProps extends React.HTMLAttributes<HTMLUListElement> {
-  device: DeviceType;
-  action: FilterActions | FeederActions;
-  isShowMessages: boolean;
+  messages: DeviceMessageType[];
+  isShow: boolean;
 }
 
 export const DeviceMessages: React.FC<DeviceMessagesProps> = ({
-  device,
-  action,
-  isShowMessages,
+  messages,
+  isShow,
 }) => {
-  const [messageList, setMessageList] = useState<string[]>([]);
-
-  useEffect(() => {
-    if (isShowMessages) setMessageList(getMessagesList(device, action));
-    else setMessageList([]);
-  }, [action, device, isShowMessages]);
-
   return (
     <ul className={styles.list}>
-      {messageList.map((message, index) => (
-        <li key={index} className={styles.message}>
-          {message}
-        </li>
-      ))}
+      {isShow &&
+        messages.map((message, index) => {
+          const h = Math.floor(message.time / 3600);
+          let hours;
+          if (h) hours = h.toString().padStart(2, '0');
+          const minutes = Math.floor((message.time % 3600) / 60)
+            .toString()
+            .padStart(2, '0');
+          const seconds = Math.floor(message.time % 60)
+            .toString()
+            .padStart(2, '0');
+          return (
+            <li key={index} className={styles.message}>
+              {deviceMessageList[message.message]}
+              <span>
+                {h > 0 && <>{hours}:</>}
+                {minutes}:{seconds}
+              </span>
+            </li>
+          );
+        })}
     </ul>
   );
 };
