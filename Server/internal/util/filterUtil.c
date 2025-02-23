@@ -124,7 +124,7 @@ void filterWorkingCorrect(Device *device) {
         rotate->action        = ROTATING;
         rotate->remainingTime = filter->timeOfRotation;
       } else {
-        if (wash->action == AWAITING_WASHING && wash->remainingTime < filter->timeBetweenRotations) {
+        if (wash->action == AWAITING_WASHING && wash->remainingTime <= filter->timeBetweenRotations) {
           rotate->action = DISABLED;
         } else if (!filter->isWithDryRotation) filterWorkingInit(device);
         else {

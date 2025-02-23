@@ -94,6 +94,14 @@ void createReportJSON(char *buf) {
   char *p = buf;
   p += sprintf(p, "data:{\"type\":\"everySecondReport\",");
 
+  p += sprintf(p, "\"info\":{");
+  p += sprintf(p, "\"date\":\"%s\",", info.date);
+  p += sprintf(p, "\"time\":\"%s\",", info.time);
+  p += sprintf(p, "\"airTemperature\":%d,", info.airTemperature);
+  p += sprintf(p, "\"humidity\":%d,", info.humidity);
+  p += sprintf(p, "\"waterTemperature\":%d", info.waterTemperature);
+  p += sprintf(p, "},");
+
   p += sprintf(p, "\"filters\":[");
   Node *node = filterService.list->head;
   while (node) {

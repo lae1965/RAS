@@ -49,6 +49,14 @@ typedef struct {
 } Device;
 
 typedef struct {
+  char date[16];
+  char time[16];
+  int  airTemperature;
+  int  humidity;
+  int  waterTemperature;
+} Info;
+
+typedef struct {
   SinglyLinkedList *list;
   bool (*add)(Filter *filter, HttpError *httpError);
   Filter *(*get)(char *filterName, HttpError *httpError);
@@ -78,6 +86,8 @@ typedef struct {
 
 extern FilterService filterService;
 extern FeederService feederService;
+
+extern Info info;
 
 // Service
 void newFilterService(void);
