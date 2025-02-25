@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { FilterType, useFilterStore } from '../store/filterStore';
 import { FeederType, useFeederStore } from '../store/feederStore';
 import { DeviceActions, RecursivePartial } from '../types';
+import { useInfoDataStore } from '../store/infoDataStore';
 
 export const useSSE = async () => {
   const eventSourceRef = useRef<EventSource | null>(null);
@@ -13,6 +14,7 @@ export const useSSE = async () => {
   const setInternalToFeeder = useFeederStore(
     (store) => store.setInternalToFeeder
   );
+  const setInfoData = useInfoDataStore((store) => store.setInfoData);
 
   useEffect(() => {
     eventSourceRef.current = new EventSource(
@@ -47,6 +49,7 @@ export const useSSE = async () => {
           break;
         }
         case 'everySecondReport':
+          setInfoData(data.info);
           setInternalToFilter(data.filters);
           setInternalToFeeder(data.feeders);
           break;

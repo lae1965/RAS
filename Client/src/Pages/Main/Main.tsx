@@ -2,26 +2,28 @@ import { Link } from 'react-router';
 
 import styles from './Main.module.css';
 
-import { indicatorData, infoData } from '../../constants';
+import { indicatorData } from '../../constants';
 import { Indicator } from '../../components/Icons/Indicator/Indicator';
 import { Device } from '../../components/Device/Device';
 import { useFilterStore } from '../../store/filterStore';
 import { useFeederStore } from '../../store/feederStore';
 import { Devices } from '../../types';
+import { useInfoDataStore } from '../../store/infoDataStore';
 
 export const Main = () => {
   const filterList = useFilterStore((state) => state.filterList);
   const feederList = useFeederStore((state) => state.feederList);
+  const infoData = useInfoDataStore((state) => state.infoData);
 
   return (
     <>
       <section>
         <ul className={styles.RASInfo}>
-          {infoData.map((item, index) => (
-            <li key={index} className={styles.infoPair}>
+          {Object.entries(infoData).map(([key, item]) => (
+            <li key={key} className={styles.infoPair}>
               <div className={styles.name}>{item.name}</div>
               <div className={styles.value}>
-                {`${item.value}${item.measurement}`}
+                {`${item.value}${item.measurment}`}
               </div>
             </li>
           ))}

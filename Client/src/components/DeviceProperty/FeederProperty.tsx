@@ -44,7 +44,7 @@ export const FeederProperty: React.FC<FeederPropertyProps> = ({
 
     const newFeeder: FeederType = {
       name: feederNameInput.input.value!,
-      isPowerOn: false,
+      isPowerOn: feeder.isPowerOn,
       timeBetweenFeedings: timeBetweenFeedings.time,
       timeOfFeeding: timeOfFeeding.time,
       internal: {

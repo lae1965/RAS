@@ -76,7 +76,7 @@ export const FilterProperty: React.FC<FilterPropertyProps> = ({
 
     const newFilter: FilterType = {
       name: filterNameInput.input.value!,
-      isPowerOn: false,
+      isPowerOn: filter.isPowerOn,
       isWithDryRotation: isWithDryRotation.input.value!,
       isWithTimerWashing: isWithTimerWashing.input.value!,
       isWithLevelWashing: isWithLevelWashing.input.value!,
