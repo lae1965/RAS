@@ -1,6 +1,6 @@
 # Определяем компилятор и флаги компиляции
 CC = gcc
-CFLAGS = -Wall -Wextra -std=c99 -D_GNU_SOURCE -I./pkg/cJSON -I./internal/http -I./internal/linked_list -I./cmd
+CFLAGS = -Wall -Wextra -std=c99 -g -O0 -D_GNU_SOURCE -I./pkg/cJSON -I./internal/http -I./internal/linked_list -I./cmd
 
 # Указываем каталоги с исходными кодами
 SRC_DIR = internal/header internal/service internal/util internal/http internal/linked_list cmd
