@@ -1,5 +1,6 @@
 import axios from 'axios';
-import { devices, Devices, DeviceType } from '../constants';
+import { devices } from '../constants';
+import { Devices, DeviceType } from '../types';
 
 const getURL = (deviceType: Devices) =>
   `http://localhost:8080/api/${devices[deviceType]}`;
@@ -65,16 +66,19 @@ export const fetchRemoveDevice = async (
   }
 };
 
-export const fetchChangeDevicePower = async (
+export const fetchShortCommands = async (
   deviceName: string,
-  deviceType: Devices
+  deviceType: Devices,
+  command: string
 ) => {
   try {
-    const url = `${getURL(deviceType)}/change_power/${deviceName}`;
+    const url = `${getURL(deviceType)}/${command}/${deviceName}`;
     const response = await axios.get(url);
     if (response.status !== 204)
       throw new Error(
-        `failed changing power on ${devices[deviceType]} ${deviceName}`
+        `failed ${command.split('_').join(' ')} on ${
+          devices[deviceType]
+        } ${deviceName}`
       );
   } catch (e) {
     console.log(e);

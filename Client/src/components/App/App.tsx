@@ -6,10 +6,10 @@ import { Layout } from '../Layout/Layout';
 import { ConfigFilter } from '../../Pages/ConfigFilter/ConfigFilter';
 import { FilterType, useFilterStore } from '../../store/filterStore';
 import { fetchGetAllDevices } from '../../api/deviceAPI';
-import { Devices } from '../../constants';
 import { FeederType, useFeederStore } from '../../store/feederStore';
 import { ConfigFeeder } from '../../Pages/ConfigFider/ConfigFeeder';
 import { useSSE } from '../../hooks/useSSE';
+import { Devices } from '../../types';
 
 const App = () => {
   const { setFilterList } = useFilterStore();

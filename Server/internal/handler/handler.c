@@ -20,7 +20,7 @@ static char *sseHeaders[] = {
     NULL
 };
 
-void handler(Http *phttp, int client_fd) {
+void handler(int client_fd) {
   char *buffer = malloc(BUFFER_SIZE);
   if (buffer == NULL) {
     sendResponse(client_fd, 500, (char *[]){contentType, NULL}, "failed allocating memory for read request", false);
@@ -93,8 +93,8 @@ void handler(Http *phttp, int client_fd) {
         // Добавляем клиентский сокет в массив подписчиков
         int i;
         for (i = 0; i < MAX_EVENTS; i++) {
-          if (phttp->subscriber_sockets[i] == 0) {
-            phttp->subscriber_sockets[i] = client_fd;  // сохраняем сокет
+          if (http.subscriber_sockets[i] == 0) {
+            http.subscriber_sockets[i] = client_fd;  // сохраняем сокет
             break;
           }
         }
@@ -108,7 +108,7 @@ void handler(Http *phttp, int client_fd) {
         if (httpError.statusCode != 404) {
           status = 204;
           snprintf(body, BUFFER_SIZE, "data: {\"type\": \"changeFilterPower\", \"name\": \"%s\", \"isPowerOn\": %s}\n\n", request->query[0].value, isPowerOn ? "true" : "false");
-          sendSSE(phttp->subscriber_sockets, body);
+          sendSSE(body);
           *body = '\0';
         } else {
           status = httpError.statusCode;
@@ -121,7 +121,7 @@ void handler(Http *phttp, int client_fd) {
         if (httpError.statusCode != 404) {
           status = 204;
           snprintf(body, BUFFER_SIZE, "data: {\"type\": \"changeFeederPower\", \"name\": \"%s\", \"isPowerOn\": %s}\n\n", request->query[0].value, isPowerOn ? "true" : "false");
-          sendSSE(phttp->subscriber_sockets, body);
+          sendSSE(body);
           *body = '\0';
         } else {
           status = httpError.statusCode;
@@ -129,6 +129,37 @@ void handler(Http *phttp, int client_fd) {
         }
         break;
       }
+      IF_ENDPOINT("/api/filter/forced_rotation/:filtername") {
+        if (filterService.forcedRotation(request->query[0].value, &httpError)) {
+          status = 204;
+          *body  = '\0';
+        } else {
+          status = httpError.statusCode;
+          snprintf(body, BUFFER_SIZE, "%s", httpError.message);
+        }
+        break;
+      }
+      IF_ENDPOINT("/api/filter/forced_washing/:filtername") {
+        if (filterService.forcedWashing(request->query[0].value, &httpError)) {
+          status = 204;
+          *body  = '\0';
+        } else {
+          status = httpError.statusCode;
+          snprintf(body, BUFFER_SIZE, "%s", httpError.message);
+        }
+        break;
+      }
+      IF_ENDPOINT("/api/feeder/forced_feeding/:feedername") {
+        if (feederService.forcedFeeding(request->query[0].value, &httpError)) {
+          status = 204;
+          *body  = '\0';
+        } else {
+          status = httpError.statusCode;
+          snprintf(body, BUFFER_SIZE, "%s", httpError.message);
+        }
+        break;
+      }
+
       snprintf(body, BUFFER_SIZE, "Method: %s, uri: %s not found", methodList[request->method], request->uri);
       status = 404;
       break;

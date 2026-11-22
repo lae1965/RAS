@@ -9,6 +9,11 @@
 
 #define MAX_NAME_SIZE 32
 
+typedef enum {
+  FILTER,
+  FEEDER
+} DeviceType;
+
 typedef struct {
   char name[MAX_NAME_SIZE];
   bool isPowerOn;
@@ -22,6 +27,35 @@ typedef struct {
   int  levelOfBeginWashing;
 } Filter;
 
+typedef enum {
+  DISABLED,
+  AWAITING_ROTATION,
+  ROTATING,
+  AWAITING_WASHING,
+  WASHING,
+  AWAITING_FEEDING,
+  FEEDING
+} Action;
+
+typedef struct {
+  Action action;
+  int    remainingTime;
+} DeviceAction;
+
+typedef struct {
+  DeviceType   type;
+  void        *properties;
+  DeviceAction da[2];
+} Device;
+
+typedef struct {
+  char date[16];
+  char time[16];
+  int  airTemperature;
+  int  humidity;
+  int  waterTemperature;
+} Info;
+
 typedef struct {
   SinglyLinkedList *list;
   bool (*add)(Filter *filter, HttpError *httpError);
@@ -29,6 +63,8 @@ typedef struct {
   bool (*change)(Filter *filterWithNewValues, char *changingFilterName, HttpError *httpError);
   bool (*changePower)(char *filterName, HttpError *httpError);
   bool (*delete)(char *filterName, HttpError *httpError);
+  bool (*forcedRotation)(char *filterName, HttpError *httpError);
+  bool (*forcedWashing)(char *filterName, HttpError *httpError);
 } FilterService;
 
 typedef struct {
@@ -45,10 +81,13 @@ typedef struct {
   bool (*change)(Feeder *feederWithNewValues, char *changingFeederName, HttpError *httpError);
   bool (*changePower)(char *feederName, HttpError *httpError);
   bool (*delete)(char *feederName, HttpError *httpError);
+  bool (*forcedFeeding)(char *feederName, HttpError *httpError);
 } FeederService;
 
 extern FilterService filterService;
 extern FeederService feederService;
+
+extern Info info;
 
 // Service
 void newFilterService(void);
@@ -69,13 +108,22 @@ typedef enum {
 
 bool  parseProperty(const char *json, char *key, void *value, PropType propType, HttpError *httpError);
 char *stringifyProperty(char *json, char *property, void *value, PropType propType, bool lastProperty);
+void  createReportJSON(char *buf);
 
 Filter *parseFilterObject(const char *jsonFilter, HttpError *httpError);
 char   *stringifyFilterObject(Filter *filter);
 char   *stringifyFilterList(void);
+void    filterWorkingInit(Device *device);
+void    filterWorkingCorrect(Device *device);
+void    filterListWorkingInit(void);
+void    filterListWorkingCorrect(void);
 
 Feeder *parseFeederObject(const char *jsonFeeder, HttpError *httpError);
 char   *stringifyFeederObject(Feeder *feeder);
 char   *stringifyFeederList(void);
+void    feederWorkingInit(Device *device);
+void    feederWorkingCorrect(Device *device);
+void    feederListWorkingInit(void);
+void    feederListWorkingCorrect(void);
 
 #endif

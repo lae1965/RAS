@@ -1,10 +1,10 @@
 import { create } from 'zustand';
-import { FilterActions } from '../constants';
-
-export interface InternalFilterType {
-  action: FilterActions;
-  isEmergencyLevel: boolean;
-}
+import {
+  DeviceActions,
+  InternalDeviceType,
+  RecursivePartial,
+  SSEPropertyList,
+} from '../types';
 
 export interface FilterType {
   name: string;
@@ -17,24 +17,27 @@ export interface FilterType {
   timeBetweenWashings: number;
   timeOfWashing: number;
   levelOfBeginWashing: number;
-  internal?: InternalFilterType;
+  internal: InternalDeviceType;
 }
-
-type PartialFilter = Partial<FilterType>;
 
 interface FilterStore {
   filterList: FilterType[];
-  initialInternal: InternalFilterType;
+  initialInternal: InternalDeviceType;
   initialFilter: FilterType;
   addNewFilter: (filter: FilterType) => void;
   deleteFilter: (filterName: string) => void;
-  changeFilter: (filterOldName: string, changingProps: PartialFilter) => void;
+  changeFilter: (
+    filterOldName: string,
+    changingProps: RecursivePartial<FilterType>
+  ) => void;
   setFilterList: (filterListData: FilterType[]) => void;
+  setInternalToFilter: (internalList: SSEPropertyList[]) => void;
 }
 
 export const useFilterStore = create<FilterStore>((set, get) => {
   const initialInternal = {
-    action: FilterActions.NO_ACTIONS,
+    action: DeviceActions.NO_ACTIONS,
+    messages: [],
     isEmergencyLevel: false,
   };
 
@@ -99,9 +102,44 @@ export const useFilterStore = create<FilterStore>((set, get) => {
         throw new Error(`Filter with name ${filterOldName} not exist`);
 
       set({
-        filterList: filterList.map((filter, index) =>
-          filterIndex === index ? { ...filter, ...changingProps } : filter
-        ),
+        filterList: <FilterType[]>filterList.map((filter, index) => {
+          if (filterIndex !== index) return filter;
+          const changingFilter: RecursivePartial<FilterType> = {
+            ...filter,
+            ...changingProps,
+          };
+          if (changingProps.internal)
+            changingFilter.internal = {
+              ...changingFilter.internal,
+              messages: [
+                ...(changingFilter.internal!.messages || []),
+                ...(changingProps.internal.messages || []),
+              ],
+              ...changingProps.internal,
+            };
+          return changingFilter;
+        }),
+      });
+    },
+    setInternalToFilter: (internalList) => {
+      const { filterList } = get();
+      set({
+        filterList: filterList.map((filter) => {
+          const _internal = internalList.find(
+            (internalItem) =>
+              internalItem.name !== undefined &&
+              internalItem.name === filter.name
+          );
+          if (!_internal) return filter;
+          return {
+            ...filter,
+            internal: {
+              isEmergencyLevel: false,
+              action: _internal.action,
+              messages: [..._internal.messageList],
+            },
+          };
+        }),
       });
     },
   };
